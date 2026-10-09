@@ -79,7 +79,7 @@ export default function ReplastIQApp() {
 
         <main className="flex-1 overflow-y-auto p-4 pb-2 bg-gray-50/50">
           {activeTab === 'generate' && <GeneratePage />}
-          {activeTab === 'scan' && <ScanPage addPoints={handleAddPoints} />}
+          {activeTab === 'scan' && <ScanPage points={points} user={user} openAuth={() => setShowAuthModal(true)} addPoints={handleAddPoints} />}
           {activeTab === 'rewards' && <RewardsPage points={points} isGuest={user?.isAnonymous} openAuth={() => setShowAuthModal(true)} />}
         </main>
 
