@@ -8,7 +8,6 @@ export default function ScanPage({ points, user, openAuth, addPoints }) {
   const [product, setProduct] = useState(null);
   const [locationResult, setLocationResult] = useState(null);
 
-  // Calculate current tier and progress
   const currentTierIndex = TIERS.findIndex((tier) => points >= tier.min && points < tier.max);
   const activeTier = TIERS[currentTierIndex] || TIERS[TIERS.length - 1];
   const nextTier = TIERS[currentTierIndex + 1];
@@ -52,12 +51,12 @@ export default function ScanPage({ points, user, openAuth, addPoints }) {
     <div className="flex flex-col h-full space-y-4">
       
       {/* QUICK-STATS HEADER CARD */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-4 text-white shadow-md relative overflow-hidden shrink-0">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 dark:from-emerald-900 dark:to-teal-950 rounded-2xl p-4 text-white shadow-md relative overflow-hidden shrink-0 transition-colors">
         <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
         
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2.5">
-            <div className={`p-2 rounded-xl bg-white/20 backdrop-blur-sm`}>
+            <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm">
               <ActiveIcon className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -71,7 +70,6 @@ export default function ScanPage({ points, user, openAuth, addPoints }) {
           </div>
         </div>
 
-        {/* Progress Bar */}
         <div className="space-y-1">
           <div className="flex justify-between text-[10px] font-medium text-emerald-100">
             <span>{nextTier ? `Next: ${nextTier.name}` : 'Max Tier'}</span>
@@ -82,7 +80,6 @@ export default function ScanPage({ points, user, openAuth, addPoints }) {
           </div>
         </div>
 
-        {/* Guest Warning Pill if applicable */}
         {user?.isAnonymous && (
           <button 
             onClick={openAuth} 
@@ -94,36 +91,35 @@ export default function ScanPage({ points, user, openAuth, addPoints }) {
         )}
       </div>
 
-      {/* SCANNER STATES */}
       {scanState === 'idle' && (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
           <div className="w-full max-w-[240px] rounded-3xl overflow-hidden shadow-xl border-4 border-emerald-400 bg-black relative">
             <Scanner onScan={handleScan} formats={['qr_code']} components={{ audio: false, finder: true }} styles={{ container: { width: '100%', aspectRatio: '1/1' } }} />
           </div>
           <div className="text-center">
-            <h2 className="text-lg font-bold text-gray-800">Scan Product Label</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Point your camera at the packaging QR</p>
+            <h2 className="text-lg font-bold text-gray-800 dark:text-white">Scan Product Label</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Point your camera at the packaging QR</p>
           </div>
         </div>
       )}
 
       {scanState === 'scanned' && product && (
         <div className="space-y-4 animate-in zoom-in-95 duration-300">
-          <div className="bg-white p-5 rounded-2xl shadow-md border relative overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-md border dark:border-gray-700 relative overflow-hidden transition-colors">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-emerald-100 p-3 rounded-full animate-bounce"><CheckCircle2 className="w-6 h-6 text-emerald-600" /></div>
-              <div><h2 className="text-xl font-black text-gray-800">Scanned!</h2><p className="text-emerald-600 font-medium text-xs">Product data retrieved</p></div>
+              <div className="bg-emerald-100 dark:bg-emerald-900/60 p-3 rounded-full animate-bounce"><CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" /></div>
+              <div><h2 className="text-xl font-black text-gray-800 dark:text-white">Scanned!</h2><p className="text-emerald-600 dark:text-emerald-400 font-medium text-xs">Product data retrieved</p></div>
             </div>
             <div className="space-y-2.5 relative z-10 text-xs">
-              <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100"><p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Product</p><p className="text-sm font-bold text-gray-800">{product.name}</p></div>
+              <div className="bg-gray-50 dark:bg-gray-700/50 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700"><p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-0.5">Product</p><p className="text-sm font-bold text-gray-800 dark:text-white">{product.name}</p></div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100"><p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Material</p><p className="font-bold text-gray-800">{product.plasticType}</p></div>
-                <div className={`p-2.5 rounded-xl border ${product.recyclable ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}><p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Status</p><p className={`font-bold ${product.recyclable ? 'text-emerald-700' : 'text-red-700'}`}>{product.recyclable ? 'Recyclable' : 'Non-Recyclable'}</p></div>
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700"><p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-0.5">Material</p><p className="font-bold text-gray-800 dark:text-white">{product.plasticType}</p></div>
+                <div className={`p-2.5 rounded-xl border ${product.recyclable ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800' : 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800'}`}><p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-0.5">Status</p><p className={`font-bold ${product.recyclable ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>{product.recyclable ? 'Recyclable' : 'Non-Recyclable'}</p></div>
               </div>
-              <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100"><p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Process</p><p className="text-xs text-gray-700">{product.process}</p></div>
+              <div className="bg-gray-50 dark:bg-gray-700/50 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700"><p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-0.5">Process</p><p className="text-xs text-gray-700 dark:text-gray-300">{product.process}</p></div>
             </div>
           </div>
-          <button onClick={handleRecycle} disabled={!product.recyclable} className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-base">
+          <button onClick={handleRecycle} disabled={!product.recyclable} className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-base shadow-md">
             <Recycle className="w-5 h-5" /> Recycle Now
           </button>
         </div>
@@ -132,29 +128,29 @@ export default function ScanPage({ points, user, openAuth, addPoints }) {
       {scanState === 'locating' && (
         <div className="flex-1 flex flex-col items-center justify-center mt-12 animate-in fade-in">
           <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mb-3" />
-          <h3 className="text-lg font-bold text-gray-800">Calculating route...</h3>
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white">Calculating route...</h3>
         </div>
       )}
 
       {scanState === 'result' && locationResult && (
         <div className="space-y-4 mt-4 animate-in slide-in-from-bottom-6">
-          <div className="bg-white p-6 rounded-3xl shadow-xl border flex flex-col items-center text-center gap-3">
-            <div className="p-3 rounded-full shadow-md bg-gray-50">{locationResult.icon}</div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border dark:border-gray-700 flex flex-col items-center text-center gap-3 transition-colors">
+            <div className="p-3 rounded-full shadow-md bg-gray-50 dark:bg-gray-700">{locationResult.icon}</div>
             <div>
-              <h2 className="text-xl font-black text-gray-800 mb-1">{locationResult.type === 'nearby' ? 'Station Found!' : 'Pickup Scheduled!'}</h2>
-              <p className="text-xs text-gray-600 font-medium bg-gray-50 p-2.5 rounded-xl">{locationResult.message}</p>
+              <h2 className="text-xl font-black text-gray-800 dark:text-white mb-1">{locationResult.type === 'nearby' ? 'Station Found!' : 'Pickup Scheduled!'}</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-300 font-medium bg-gray-50 dark:bg-gray-700/50 p-2.5 rounded-xl">{locationResult.message}</p>
             </div>
           </div>
-          <button onClick={handleConfirm} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl">Confirm Action</button>
+          <button onClick={handleConfirm} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md">Confirm Action</button>
         </div>
       )}
 
       {scanState === 'completed' && (
         <div className="flex-1 flex flex-col items-center justify-center mt-6 animate-in zoom-in-50">
-          <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-4 shadow-inner"><Award className="w-10 h-10 text-yellow-600" /></div>
-          <h2 className="text-2xl font-black text-gray-800 mb-1">+50 Points!</h2>
-          <p className="text-gray-500 text-xs text-center mb-6 px-4">Action verified. Your eco-points are saved.</p>
-          <button onClick={() => { setScanState('idle'); setProduct(null); setLocationResult(null); }} className="bg-gray-100 text-gray-800 font-bold py-2.5 px-6 rounded-full border text-xs">Scan Another Item</button>
+          <div className="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center mb-4 shadow-inner"><Award className="w-10 h-10 text-yellow-600 dark:text-yellow-400" /></div>
+          <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-1">+50 Points!</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-xs text-center mb-6 px-4">Action verified. Your eco-points are saved.</p>
+          <button onClick={() => { setScanState('idle'); setProduct(null); setLocationResult(null); }} className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white font-bold py-2.5 px-6 rounded-full border dark:border-gray-700 text-xs">Scan Another Item</button>
         </div>
       )}
     </div>

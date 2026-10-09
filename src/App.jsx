@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Leaf, User } from 'lucide-react';
+import { Leaf, User, Sun, Moon } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from './firebase';
 import { TIERS } from './constants/tiers';
 
-// Import our new components
 import BottomNav from './components/BottomNav';
 import AuthModal from './components/AuthModal';
 import LevelUpModal from './components/LevelUpModal';
@@ -19,6 +18,14 @@ export default function ReplastIQApp() {
   const [points, setPoints] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [unlockedTier, setUnlockedTier] = useState(null);
+  
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('replastiq_theme') === 'dark';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('replastiq_theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -63,21 +70,35 @@ export default function ReplastIQApp() {
   };
 
   return (
-    <div className="h-[100dvh] bg-gray-100 flex justify-center font-sans text-gray-800">
-      <div className="w-full max-w-md bg-white h-full flex flex-col relative shadow-2xl overflow-hidden">
+    <div className={`${darkMode ? 'dark' : ''} h-[100dvh] bg-gray-900 flex justify-center font-sans text-gray-800`}>
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 h-full flex flex-col relative shadow-2xl overflow-hidden transition-colors duration-300">
         
-        <header className="bg-emerald-600 text-white p-4 shadow-md z-10 flex items-center justify-between rounded-b-2xl shrink-0 transition-all duration-300">
+        <header className="bg-emerald-600 dark:bg-emerald-800 text-white p-4 shadow-md z-10 flex items-center justify-between rounded-b-2xl shrink-0 transition-all duration-300">
           <div className="flex items-center gap-2">
             <Leaf className="w-6 h-6" />
             <h1 className="text-xl font-bold tracking-wide">ReplastIQ</h1>
           </div>
-          <button onClick={() => setShowAuthModal(true)} className="flex items-center gap-1.5 bg-emerald-700/80 hover:bg-emerald-800 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm border border-emerald-400/30 transition-all active:scale-95">
-            <User className="w-4 h-4" />
-            {user?.isAnonymous ? 'Guest' : (user?.email?.split('@')[0] || 'Account')}
-          </button>
+          
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setDarkMode(!darkMode)}
+              className="bg-emerald-700/80 hover:bg-emerald-800 p-2 rounded-full text-white backdrop-blur-sm border border-emerald-400/30 transition-all active:scale-95"
+              title="Toggle Theme"
+            >
+              {darkMode ? <Sun className="w-4 h-4 text-yellow-300" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <button 
+              onClick={() => setShowAuthModal(true)} 
+              className="flex items-center gap-1.5 bg-emerald-700/80 hover:bg-emerald-800 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm border border-emerald-400/30 transition-all active:scale-95"
+            >
+              <User className="w-4 h-4" />
+              {user?.isAnonymous ? 'Guest' : (user?.email?.split('@')[0] || 'Account')}
+            </button>
+          </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 pb-2 bg-gray-50/50">
+        <main className="flex-1 overflow-y-auto p-4 pb-2 bg-gray-50/50 dark:bg-gray-900 transition-colors duration-300">
           {activeTab === 'generate' && <GeneratePage />}
           {activeTab === 'scan' && <ScanPage points={points} user={user} openAuth={() => setShowAuthModal(true)} addPoints={handleAddPoints} />}
           {activeTab === 'rewards' && <RewardsPage points={points} isGuest={user?.isAnonymous} openAuth={() => setShowAuthModal(true)} />}
