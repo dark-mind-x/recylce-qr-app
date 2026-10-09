@@ -11,7 +11,10 @@ export default function BottomNav({ activeTab, setActiveTab }) {
   const activeIndex = tabs.findIndex(tab => tab.id === activeTab);
 
   return (
-    <div className="bg-gray-50/50 px-6 pb-6 pt-2 shrink-0">
+    <div 
+      className="bg-gray-50/50 px-5 pt-2 shrink-0"
+      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))'}}
+    >
       <nav className="w-full bg-white p-2 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[24px] z-20 border border-gray-100">
         <div className="relative flex w-full">
           
