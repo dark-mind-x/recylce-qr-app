@@ -11,8 +11,11 @@ export default function BottomNav({ activeTab, setActiveTab }) {
   const activeIndex = tabs.findIndex(tab => tab.id === activeTab);
 
   return (
-    <div className="bg-gray-50/50 dark:bg-gray-900 px-6 pb-6 pt-2 shrink-0 transition-colors duration-300">
-      <nav className="w-full bg-white dark:bg-gray-800 p-2 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] rounded-[24px] z-20 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+    <div 
+      className="bg-gray-50/50 px-5 pt-2 shrink-0"
+      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))'}}
+    >
+      <nav className="w-full bg-white p-2 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[24px] z-20 border border-gray-100">
         <div className="relative flex w-full">
           
           <div 
@@ -22,7 +25,7 @@ export default function BottomNav({ activeTab, setActiveTab }) {
               transform: `translateX(${activeIndex * 100}%)` 
             }}
           >
-            <div className="w-16 h-8 bg-emerald-600 dark:bg-emerald-500 rounded-full" />
+            <div className="w-16 h-8 bg-emerald-600 rounded-full" />
           </div>
 
           {tabs.map((tab) => {
@@ -41,13 +44,13 @@ export default function BottomNav({ activeTab, setActiveTab }) {
                     className={`relative z-10 w-5 h-5 transition-all duration-500 ${
                       isActive 
                         ? 'text-white scale-110 drop-shadow-sm' 
-                        : 'text-gray-400 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200'
+                        : 'text-gray-400 group-hover:text-gray-600'
                     }`} 
                   />
                 </div>
                 <span 
                   className={`text-[10px] font-bold tracking-wide transition-all duration-500 ${
-                    isActive ? 'text-emerald-700 dark:text-emerald-300 opacity-100' : 'text-gray-400 opacity-70 group-hover:text-gray-600 dark:group-hover:text-gray-300'
+                    isActive ? 'text-emerald-700 opacity-100' : 'text-gray-400 opacity-70 group-hover:text-gray-600'
                   }`}
                 >
                   {tab.label}
