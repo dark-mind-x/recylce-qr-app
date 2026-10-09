@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
-    "html5-qrcode": "^2.3.8",
+    "@yudiel/react-qr-scanner": "^2.6.0",
     "lucide-react": "^1.53.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.8",

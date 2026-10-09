@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   QrCode, 
   ScanLine, 
@@ -9,33 +9,29 @@ import {
   Truck, 
   Download,
   Loader2,
-  Recycle,
-  AlertCircle
+  Recycle
 } from 'lucide-react';
+import { Scanner } from '@yudiel/react-qr-scanner';
 
 export default function EcoRecycleApp() {
   const [activeTab, setActiveTab] = useState('scan');
-  const [points, setPoints] = useState(150); // Starting with some points for demo purposes
+  const [points, setPoints] = useState(150);
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center font-sans text-gray-800">
-      {/* Mobile container constraint */}
       <div className="w-full max-w-md bg-white min-h-screen flex flex-col relative shadow-2xl overflow-hidden">
         
-        {/* Header */}
         <header className="bg-emerald-600 text-white p-4 shadow-md z-10 flex items-center justify-center gap-2 rounded-b-2xl">
           <Leaf className="w-6 h-6" />
           <h1 className="text-xl font-bold tracking-wide">EcoRecycle</h1>
         </header>
 
-        {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto pb-24 p-4">
           {activeTab === 'generate' && <GenerateTab />}
           {activeTab === 'scan' && <ScanTab addPoints={(p) => setPoints(prev => prev + p)} />}
           {activeTab === 'rewards' && <RewardsTab points={points} />}
         </main>
 
-        {/* Bottom Navigation */}
         <nav className="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-between px-6 py-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20 rounded-t-2xl">
           <NavButton 
             icon={<ScanLine />} 
@@ -90,14 +86,12 @@ function GenerateTab() {
 
   const handleGenerate = () => {
     const dataString = JSON.stringify(formData);
-    // Using a reliable public API for generating QR code image from data
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(dataString)}&margin=10`;
     setQrUrl(url);
   };
 
   const handleDownload = async () => {
     try {
-      // Fetching the image as a blob to allow direct download bypassing some browser restrictions
       const response = await fetch(qrUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -109,7 +103,6 @@ function GenerateTab() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      // Fallback if fetch fails due to CORS in some strict environments
       window.open(qrUrl, '_blank');
     }
   };
@@ -177,7 +170,6 @@ function GenerateTab() {
         </button>
       </div>
 
-      {/* QR Display Area */}
       {qrUrl && (
         <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col items-center gap-4 animate-in zoom-in duration-300">
           <h3 className="font-bold text-gray-700">Generated Tag</h3>
@@ -198,27 +190,26 @@ function GenerateTab() {
 }
 
 function ScanTab({ addPoints }) {
-  const [scanState, setScanState] = useState('idle'); // idle, scanned, locating, result, completed
+  const [scanState, setScanState] = useState('idle');
   const [product, setProduct] = useState(null);
   const [locationResult, setLocationResult] = useState(null);
 
-  const simulateScan = () => {
-    setProduct({
-      name: '1L Pepsi Bottle',
-      type: 'PET',
-      recyclable: true,
-      process: 'Shredding and melting into fibers'
-    });
-    setScanState('scanned');
+  const handleScan = (detectedCodes) => {
+    if (detectedCodes && detectedCodes.length > 0) {
+      try {
+        const parsedData = JSON.parse(detectedCodes[0].rawValue);
+        setProduct(parsedData);
+        setScanState('scanned');
+      } catch (err) {
+        console.error("Invalid QR format: not JSON", err);
+      }
+    }
   };
 
   const handleRecycle = () => {
     setScanState('locating');
-    
-    // Simulate API delay for finding location
     setTimeout(() => {
-      const isNearby = Math.random() > 0.5; // 50% chance
-      
+      const isNearby = Math.random() > 0.5;
       setLocationResult(isNearby ? {
         type: 'nearby',
         message: 'Station 1.2km away - Drop off recommended',
@@ -228,7 +219,6 @@ function ScanTab({ addPoints }) {
         message: 'Too far - Arranging Delivery Boy Pickup',
         icon: <Truck className="w-8 h-8 text-blue-500" />
       });
-      
       setScanState('result');
     }, 2000);
   };
@@ -248,25 +238,25 @@ function ScanTab({ addPoints }) {
     <div className="flex flex-col h-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {scanState === 'idle' && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 mt-12">
-          <div className="relative">
-            <div className="w-64 h-64 border-4 border-emerald-400 border-dashed rounded-3xl flex items-center justify-center bg-emerald-50 animate-pulse">
-              <ScanLine className="w-24 h-24 text-emerald-300" />
-            </div>
-            <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500 animate-[scan_2s_ease-in-out_infinite]" style={{boxShadow: '0 0 8px #10b981'}} />
+        <div className="flex-1 flex flex-col items-center justify-center gap-6 mt-6">
+          <div className="w-full max-w-[280px] rounded-3xl overflow-hidden shadow-xl border-4 border-emerald-400 bg-black">
+            {/* The new React-native scanner replaces the tricky useEffect block */}
+            <Scanner 
+              onScan={handleScan}
+              formats={['qr_code']}
+              components={{
+                audio: false,
+                finder: true,
+              }}
+              styles={{
+                container: { width: '100%', aspectRatio: '1/1' }
+              }}
+            />
           </div>
           <div className="text-center">
             <h2 className="text-xl font-bold text-gray-800">Ready to Scan</h2>
             <p className="text-gray-500 text-sm mt-1">Point your camera at the recycling QR</p>
           </div>
-          
-          <button 
-            onClick={simulateScan}
-            className="mt-8 bg-gray-800 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
-          >
-            <QrCode className="w-5 h-5" />
-            Simulate Scan (Demo)
-          </button>
         </div>
       )}
 
@@ -296,7 +286,7 @@ function ScanTab({ addPoints }) {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
                   <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Material</p>
-                  <p className="font-bold text-gray-800">{product.type}</p>
+                  <p className="font-bold text-gray-800">{product.plasticType || product.type}</p>
                 </div>
                 <div className={`p-3 rounded-xl border ${product.recyclable ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
                   <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Status</p>
@@ -387,7 +377,6 @@ function RewardsTab({ points }) {
   const maxPoints = 500;
   const progressPercentage = Math.min((points / maxPoints) * 100, 100);
 
-  // Determine badge based on points
   let BadgeIcon = Leaf;
   let badgeName = "Seedling";
   let badgeColor = "text-green-500";
@@ -408,7 +397,6 @@ function RewardsTab({ points }) {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
       
-      {/* Points Summary Card */}
       <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
         <Leaf className="absolute -right-6 -bottom-6 w-32 h-32 text-white opacity-10" />
         <h2 className="text-emerald-100 font-medium mb-1">Total Rewards</h2>
@@ -431,7 +419,6 @@ function RewardsTab({ points }) {
         </div>
       </div>
 
-      {/* Current Badge */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-4">
         <div className={`p-4 rounded-2xl ${badgeBg}`}>
           <BadgeIcon className={`w-8 h-8 ${badgeColor}`} />
@@ -442,7 +429,6 @@ function RewardsTab({ points }) {
         </div>
       </div>
 
-      {/* Recent Activity */}
       <div className="pt-4">
         <h3 className="text-lg font-bold text-gray-800 mb-4 px-1">Recent Activity</h3>
         <div className="space-y-3">
@@ -479,4 +465,3 @@ function RewardsTab({ points }) {
     </div>
   );
 }
-
